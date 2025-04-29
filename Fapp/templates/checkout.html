@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h3 class="mb-0"><i class="fas fa-credit-card me-2"></i>Checkout</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3"><i class="fas fa-truck me-2"></i>Shipping Information</h5>
+                        <div class="mb-4">
+                            {{ form.shipping_address.label_tag }}
+                            {{ form.shipping_address }}
+                            {% if form.shipping_address.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.shipping_address.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="mb-3"><i class="fas fa-file-invoice-dollar me-2"></i>Billing Information</h5>
+                        <div class="mb-4">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="same-as-shipping">
+                                <label class="form-check-label" for="same-as-shipping">
+                                    Same as shipping address
+                                </label>
+                            </div>
+                            {{ form.billing_address.label_tag }}
+                            {{ form.billing_address }}
+                            {% if form.billing_address.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.billing_address.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="mb-3"><i class="fas fa-money-bill-wave me-2"></i>Payment Method</h5>
+                        <div class="mb-4">
+                            <div class="list-group">
+                                {% for radio in form.payment_method %}
+                                <label class="list-group-item d-flex align-items-center">
+                                    <div class="me-3">
+                                        {{ radio.tag }}
+                                    </div>
+                                    <div>
+                                        <strong>{{ radio.choice_label }}</strong>
+                                        {% if radio.choice_value == 'credit_card' %}
+                                        <div class="mt-1">
+                                            <img src="{% static 'images/credit-cards.png' %}" alt="Credit cards" style="height: 20px;">
+                                        </div>
+                                        {% elif radio.choice_value == 'paypal' %}
+                                        <div class="mt-1">
+                                            <img src="{% static 'images/paypal.png' %}" alt="PayPal" style="height: 20px;">
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            {% if form.payment_method.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.payment_method.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">
+                                <i class="fas fa-lock me-2"></i>Place Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary border-bottom-0 py-3">
+                    <h3 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for item in cart.items.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0">
+                            <div>
+                                {{ item.product.name }}
+                                <small class="text-muted d-block">x{{ item.quantity }}</small>
+                            </div>
+                            <span>#{{ item.get_total_price }}</span>
+                        </li>
+                        {% endfor %}
+                        
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0">
+                            <span>Shipping</span>
+                            <span class="text-success">Free</span>
+                        </li>
+						<hr>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 fw-bold fs-5">
+                            <span>Total</span>
+                            <span>#{{ cart.get_total_price }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Same as shipping address functionality
+    const sameAsShipping = document.getElementById('same-as-shipping');
+    const shippingAddress = document.getElementById('id_shipping_address');
+    const billingAddress = document.getElementById('id_billing_address');
+    
+    sameAsShipping.addEventListener('change', function() {
+        if (this.checked) {
+            billingAddress.value = shippingAddress.value;
+        }
+    });
+    
+    shippingAddress.addEventListener('input', function() {
+        if (sameAsShipping.checked) {
+            billingAddress.value = shippingAddress.value;
+        }
+    });
+    
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}

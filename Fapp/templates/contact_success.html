@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block link %}<link rel="stylesheet" href="{% static 'Fapp/css/styles.css' %}">{% endblock  %}
+{% block title %} Contact Success {% endblock  %}
+	
+{% block content %}
+<body>
+	<div class="success">
+		<h1>Success!</h1>
+		<p>Your contact message has been succesfully sent. we'll be in touch soon</p>
+		<a href="{% url 'home' %}">Back to Home page</a>
+	</div>
+</body>
+{% endblock  %}

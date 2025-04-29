@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="card-header bg-success text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-1"><i class="fas fa-check-circle me-2"></i>Order Confirmed</h2>
+                            <p class="mb-0">Thank you for your purchase!</p>
+                        </div>
+                        <span class="badge bg-white text-dark fs-5">#{{ order.order_number }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 p-lg-5">
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Order Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><strong>Order Number:</strong> #{{ order.order_number }}</li>
+                                        <li class="mb-2"><strong>Date:</strong> {{ order.created_at|date:"F j, Y H:i" }}</li>
+                                        <li class="mb-2"><strong>Total:</strong> #{{ order.total_price }}</li>
+                                        <li class="mb-2"><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</li>
+                                        <li>
+                                            <strong>Status:</strong> 
+                                            <span class="badge 
+                                                {% if order.status == 'completed' %}bg-success
+                                                {% elif order.status == 'cancelled' %}bg-danger
+                                                {% elif order.status == 'processing' %}bg-primary
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ order.get_status_display }}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Shipping Address</h5>
+                                </div>
+                                <div class="card-body">
+                                    <address class="mb-0">
+                                        {{ order.shipping_address|linebreaks }}
+                                    </address>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>Order Items</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th class="text-end">Price</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.cart.items.all %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                                         class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: contain;">
+                                                    <div>
+                                                        <h6 class="mb-1">{{ item.product.name }}</h6>
+                                                        <small class="text-muted">{{ item.product.category.name }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-end">#{{ item.price }}</td>
+                                            <td class="align-middle text-center">{{ item.quantity }}</td>
+                                            <td class="align-middle text-end">#{{ item.get_total_price }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot class="bg-light">
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold">Subtotal:</td>
+                                            <td class="text-end fw-bold">#{{ order.cart.get_total_price }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold">Shipping:</td>
+                                            <td class="text-end text-success fw-bold">Free</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                                            <td class="text-end fw-bold">#{{ order.total_price }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'menu' %}" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        </a>
+                        <a href="{% url 'order_history' %}" class="btn btn-primary px-4">
+                            <i class="fas fa-list-alt me-2"></i>View Order History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

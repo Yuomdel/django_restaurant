@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Contact {% endblock  %}
+{% block link %}<link rel="stylesheet" href="{% static 'Fapp/css/styles.css' %}">{% endblock  %}
+
+{% block content %}
+<div id="contact" class="container bg-secondary text-center">
+	<h1>Contact Us</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button class="bg-primary" type="submit" >Submit</button>
+	</form><br>
+</div>
+
+{% endblock  %}
